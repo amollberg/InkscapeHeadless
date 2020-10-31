@@ -57,10 +57,16 @@ tasks {
     into("$buildDir/config/")
   }
 
+  register("copySourceSvg", Copy::class) {
+    from(file("test.svg"))
+    into("$buildDir/sources/")
+  }
+
   register("build", Exec::class) {
     dependsOn(
       "unzipInkscape",
-      "createInkscapeConfigDir")
+      "createInkscapeConfigDir",
+      "copySourceSvg")
 
     standardInput = java.io.ByteArrayInputStream("""
       verb:ZoomPage
@@ -71,10 +77,13 @@ tasks {
       verb:ru.cnc-club.filter.gcodetools_orientation_no_options_no_preferences.noprefs
       verb:EditSelectAll
       verb:ru.cnc-club.filter.gcodetools_ptg.noprefs
+      verb:FileSave
+      verb:FileQuit
       quit
     """.trimIndent().toByteArray())
     executable = "$buildDir/inkscape/bin/inkscape.exe"
-    args("test.svg", "--with-gui", "--shell")
+    val inputFile = "$buildDir/sources/test.svg"
+    args(inputFile, "--with-gui", "--shell")
     environment(
       "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
   }
