@@ -13,7 +13,7 @@ repositories {
   }
   ivy {
     url = uri("dependencies/")
-    patternLayout{
+    patternLayout {
       artifact("/[module][revision]-extra.[ext]")
     }
     metadataSources { artifact() }
@@ -25,34 +25,39 @@ dependencies {
   "compile"("org.7-zip:7z:1900@zip")
 }
 
-tasks.register("unzip7z", Copy::class) {
-  dependsOn(configurations["compile"])
-  val sevenZipArchive = configurations["compile"].find {
-    it.name.startsWith("7z")
-  }!!
+tasks {
+  register("unzip7z", Copy::class) {
+    dependsOn(configurations["compile"])
+    val sevenZipArchive = configurations["compile"].find {
+      it.name.startsWith("7z")
+    }!!
 
-  from(zipTree(sevenZipArchive))
-  into(file("$buildDir/7z"))
-}
+    from(zipTree(sevenZipArchive))
+    into(file("$buildDir/7z"))
+  }
 
-tasks.register("unzipInkscape", Exec::class) {
-  dependsOn("unzip7z")
+  register("unzipInkscape", Exec::class) {
+    dependsOn("unzip7z")
 
-  outputs.upToDateWhen { file("$buildDir/inkscape/bin/inkscape.exe").exists() }
+    outputs.upToDateWhen { file("$buildDir/inkscape/bin/inkscape.exe").exists() }
 
-  val inkscapeArtifact = configurations["compile"].find {
-    it.name.startsWith("inkscape")
-  }!!
+    val inkscapeArtifact = configurations["compile"].find {
+      it.name.startsWith("inkscape")
+    }!!
 
-  executable = "$buildDir/7z/7za.exe"
-  args("x", inkscapeArtifact.absolutePath, "-y",
-       "-o${buildDir.absolutePath}")
-}
+    executable = "$buildDir/7z/7za.exe"
+    args(
+      "x", inkscapeArtifact.absolutePath, "-y",
+      "-o${buildDir.absolutePath}"
+    )
+  }
 
-tasks.register("build", Exec::class) {
-  dependsOn("unzipInkscape")
+  register("build", Exec::class) {
+    dependsOn("unzipInkscape")
 
-  executable = "$buildDir/inkscape/bin/inkscape.exe"
-  args("--user-data-directory")
-  environment("INKSCAPE_PROFILE_DIR" to file("config").absolutePath)
+    executable = "$buildDir/inkscape/bin/inkscape.exe"
+    args("--user-data-directory")
+    environment("INKSCAPE_PROFILE_DIR" to file("config").absolutePath)
+  }
+
 }
