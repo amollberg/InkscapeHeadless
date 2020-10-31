@@ -62,11 +62,16 @@ tasks {
     into("$buildDir/sources/")
   }
 
-  register("build", Exec::class) {
+  val addGcodeToolsConfiguration by registering(Exec::class) {
     dependsOn(
       "unzipInkscape",
       "createInkscapeConfigDir",
       "copySourceSvg")
+    val inputFile = "$buildDir/sources/test.svg"
+    inputs.file(inputFile)
+
+    val outputFile = "$buildDir/configured/test.svg"
+    outputs.file(outputFile)
 
     standardInput = java.io.ByteArrayInputStream("""
       verb:ZoomPage
@@ -75,17 +80,37 @@ tasks {
       verb:ObjectToPath
       verb:ru.cnc-club.filter.gcodetools_tools_library_no_options_no_preferences.noprefs
       verb:ru.cnc-club.filter.gcodetools_orientation_no_options_no_preferences.noprefs
-      verb:EditSelectAll
-      verb:ru.cnc-club.filter.gcodetools_ptg.noprefs
-      verb:FileSave
-      verb:FileQuit
+      export-type:svg
+      export-filename:$outputFile
+      export-do
+      file-close
+      quit-inkscape
       quit
     """.trimIndent().toByteArray())
     executable = "$buildDir/inkscape/bin/inkscape.exe"
-    val inputFile = "$buildDir/sources/test.svg"
     args(inputFile, "--with-gui", "--shell")
     environment(
       "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
   }
 
+  register("exportToGcode", Exec::class) {
+    inputs.files(addGcodeToolsConfiguration.get().outputs)
+
+    standardInput = java.io.ByteArrayInputStream("""
+      verb:ZoomPage
+      verb:EditSelectAll
+      verb:ru.cnc-club.filter.gcodetools_ptg.noprefs
+      file-close
+      quit-inkscape
+      quit
+    """.trimIndent().toByteArray())
+    executable = "$buildDir/inkscape/bin/inkscape.exe"
+    args(inputs.files.singleFile, "--with-gui", "--shell")
+    environment(
+      "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
+  }
+
+  register("build") {
+    dependsOn("exportToGcode")
+  }
 }
