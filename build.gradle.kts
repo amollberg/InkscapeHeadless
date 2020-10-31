@@ -49,6 +49,10 @@ tasks.register("unzipInkscape", Exec::class) {
        "-o${buildDir.absolutePath}")
 }
 
-tasks.register("build") {
+tasks.register("build", Exec::class) {
   dependsOn("unzipInkscape")
+
+  executable = "$buildDir/inkscape/bin/inkscape.exe"
+  args("--user-data-directory")
+  environment("INKSCAPE_PROFILE_DIR" to file("config").absolutePath)
 }
