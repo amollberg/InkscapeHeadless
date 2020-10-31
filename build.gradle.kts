@@ -66,6 +66,13 @@ tasks {
     args(
       "test.svg",
       "--verb", "EditSelectAll",
+      "--verb", "ObjectToPath",
+      "--verb", "ru.cnc-club.filter.gcodetools_tools_library_no_options_no_preferences.noprefs",
+      "--verb", "ru.cnc-club.filter.gcodetools_orientation_no_options_no_preferences.noprefs",
+      "--verb", "ru.cnc-club.filter.gcodetools_ptg.noprefs",
+      "--verb", "EditUndo",
+      "--verb", "FileClose",
+      "--batch-process",
       "--export-filename", "test.png"
     )
     environment(
