@@ -95,6 +95,9 @@ tasks {
 
   register("exportToGcode", Exec::class) {
     inputs.files(addGcodeToolsConfiguration.get().outputs)
+    doFirst {
+      file("$buildDir/gcode").mkdirs()
+    }
 
     standardInput = java.io.ByteArrayInputStream("""
       verb:ZoomPage
