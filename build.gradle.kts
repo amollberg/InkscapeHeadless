@@ -62,17 +62,19 @@ tasks {
       "unzipInkscape",
       "createInkscapeConfigDir")
 
+    standardInput = java.io.ByteArrayInputStream("""
+      verb:ZoomPage
+      verb:ToolNode
+      verb:EditSelectAll
+      verb:ObjectToPath
+      verb:ru.cnc-club.filter.gcodetools_tools_library_no_options_no_preferences.noprefs
+      verb:ru.cnc-club.filter.gcodetools_orientation_no_options_no_preferences.noprefs
+      verb:EditSelectAll
+      verb:ru.cnc-club.filter.gcodetools_ptg.noprefs
+      quit
+    """.trimIndent().toByteArray())
     executable = "$buildDir/inkscape/bin/inkscape.exe"
-    args(
-      "test.svg",
-      "--verb", "EditSelectAll",
-      "--verb", "ObjectToPath",
-      "--verb", "ru.cnc-club.filter.gcodetools_tools_library_no_options_no_preferences.noprefs",
-      "--verb", "ru.cnc-club.filter.gcodetools_orientation_no_options_no_preferences.noprefs",
-      "--verb", "ru.cnc-club.filter.gcodetools_ptg.noprefs",
-      "--batch-process",
-      "--export-filename", "test.png"
-    )
+    args("test.svg", "--with-gui", "--shell")
     environment(
       "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
   }
