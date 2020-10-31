@@ -52,8 +52,15 @@ tasks {
     )
   }
 
+  register("createInkscapeConfigDir", Copy::class) {
+    from(file("config"))
+    into("$buildDir/config/")
+  }
+
   register("build", Exec::class) {
-    dependsOn("unzipInkscape")
+    dependsOn(
+      "unzipInkscape",
+      "createInkscapeConfigDir")
 
     executable = "$buildDir/inkscape/bin/inkscape.exe"
     args("--user-data-directory")
