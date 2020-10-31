@@ -54,12 +54,12 @@ tasks {
 
   register("createInkscapeConfigDir", Copy::class) {
     from(file("config"))
-    into("$buildDir/config/")
+    into("$buildDir/inkscape-config/")
   }
 
   register("copySourceSvg", Copy::class) {
     from(file("test.svg"))
-    into("$buildDir/sources/")
+    into("$buildDir/svg-sources/")
   }
 
   val addGcodeToolsConfiguration by registering(Exec::class) {
@@ -67,10 +67,10 @@ tasks {
       "unzipInkscape",
       "createInkscapeConfigDir",
       "copySourceSvg")
-    val inputFile = "$buildDir/sources/test.svg"
+    val inputFile = "$buildDir/svg-sources/test.svg"
     inputs.file(inputFile)
 
-    val outputFile = "$buildDir/configured/test.svg"
+    val outputFile = "$buildDir/svg-configured/test.svg"
     outputs.file(outputFile)
 
     standardInput = java.io.ByteArrayInputStream("""
@@ -90,7 +90,7 @@ tasks {
     executable = "$buildDir/inkscape/bin/inkscape.exe"
     args(inputFile, "--with-gui", "--shell")
     environment(
-      "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
+      "INKSCAPE_PROFILE_DIR" to file("$buildDir/inkscape-config").absolutePath)
   }
 
   register("exportToGcode", Exec::class) {
@@ -110,7 +110,7 @@ tasks {
     executable = "$buildDir/inkscape/bin/inkscape.exe"
     args(inputs.files.singleFile, "--with-gui", "--shell")
     environment(
-      "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
+      "INKSCAPE_PROFILE_DIR" to file("$buildDir/inkscape-config").absolutePath)
   }
 
   register("build") {
