@@ -18,9 +18,18 @@ dependencies {
   "compile"("org.inkscape:inkscape:1.0.1:x64@7z")
 }
 
-tasks.register("prepare") {
+tasks.register("unzipInkscape", Copy::class) {
   dependsOn(configurations["compile"])
+  val zipPath = configurations["compile"].find { it.isFile }!!
+
+  from(zipPath)
+  into(file("$buildDir/inkscape"))
+
   doLast {
-    println(configurations["compile"].map { file -> file.name})
+    println(outputs.files.map { it.absolutePath })
   }
+}
+
+tasks.register("build") {
+  dependsOn("unzipInkscape")
 }
