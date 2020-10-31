@@ -1,16 +1,3 @@
-import eu.emundo.gradle.sevenz.UnSevenZ
-
-buildscript {
-  repositories {
-    maven {
-      url = uri("https://plugins.gradle.org/m2/")
-    }
-  }
-  dependencies {
-    classpath("gradle.plugin.eu.emundo:7z-gradle-plugin:1.0.5")
-  }
-}
-
 configurations {
   create("compile")
 }
@@ -24,22 +11,42 @@ repositories {
     }
     metadataSources { artifact() }
   }
+  ivy {
+    url = uri("dependencies/")
+    patternLayout{
+      artifact("/[module][revision]-extra.[ext]")
+    }
+    metadataSources { artifact() }
+  }
 }
 
 dependencies {
   "compile"("org.inkscape:inkscape:1.0.1:x64@7z")
+  "compile"("org.7-zip:7z:1900@zip")
 }
 
-tasks.register("unzipInkscape", UnSevenZ::class) {
+tasks.register("unzip7z", Copy::class) {
   dependsOn(configurations["compile"])
-  val zipPath = configurations["compile"].find { it.isFile }!!
+  val sevenZipArchive = configurations["compile"].find {
+    it.name.startsWith("7z")
+  }!!
 
-  sourceFile = zipPath
-  outputDir = file("$buildDir/inkscape")
+  from(zipTree(sevenZipArchive))
+  into(file("$buildDir/7z"))
+}
 
-  doLast {
-    println(outputs.files.map { it.absolutePath })
-  }
+tasks.register("unzipInkscape", Exec::class) {
+  dependsOn("unzip7z")
+
+  outputs.upToDateWhen { file("$buildDir/inkscape/bin/inkscape.exe").exists() }
+
+  val inkscapeArtifact = configurations["compile"].find {
+    it.name.startsWith("inkscape")
+  }!!
+
+  executable = "$buildDir/7z/7za.exe"
+  args("x", inkscapeArtifact.absolutePath, "-y",
+       "-o${buildDir.absolutePath}")
 }
 
 tasks.register("build") {
