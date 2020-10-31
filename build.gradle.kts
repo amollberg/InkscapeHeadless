@@ -63,8 +63,13 @@ tasks {
       "createInkscapeConfigDir")
 
     executable = "$buildDir/inkscape/bin/inkscape.exe"
-    args("--user-data-directory")
-    environment("INKSCAPE_PROFILE_DIR" to file("config").absolutePath)
+    args(
+      "test.svg",
+      "--verb", "EditSelectAll",
+      "--export-filename", "test.png"
+    )
+    environment(
+      "INKSCAPE_PROFILE_DIR" to file("$buildDir/config").absolutePath)
   }
 
 }
