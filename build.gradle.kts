@@ -1,79 +1,20 @@
-configurations {
-  create("compile")
-}
+import org.example.amollberg.InkscapeHeadlessPlugin
+import org.example.amollberg.InkscapeExec
 
-repositories {
-  // Repo for a single file in a public HTTPS repo, no metadata files required
-  ivy {
-    url = uri("https://media.inkscape.org/")
-    patternLayout {
-      artifact("/dl/resources/file/[module]-[revision]-[classifier].[ext]")
-    }
-    metadataSources { artifact() }
-  }
-  ivy {
-    url = uri("dependencies/")
-    patternLayout {
-      artifact("/[module][revision]-extra.[ext]")
-    }
-    metadataSources { artifact() }
-  }
-}
-
-dependencies {
-  "compile"("org.inkscape:inkscape:1.0.1:x64@7z")
-  "compile"("org.7-zip:7z:1900@zip")
-}
+apply<InkscapeHeadlessPlugin>()
 
 tasks {
-  register("unzip7z", Copy::class) {
-    dependsOn(configurations["compile"])
-    val sevenZipArchive = configurations["compile"].find {
-      it.name.startsWith("7z")
-    }!!
+  val addGcodeToolsConfiguration by registering(InkscapeExec::class) {
+    val inputFile = file("test.svg")
+    inputs.files(inputFile)
 
-    from(zipTree(sevenZipArchive))
-    into(file("$buildDir/7z"))
-  }
-
-  register("unzipInkscape", Exec::class) {
-    dependsOn("unzip7z")
-
-    outputs.upToDateWhen { file("$buildDir/inkscape/bin/inkscape.exe").exists() }
-
-    val inkscapeArtifact = configurations["compile"].find {
-      it.name.startsWith("inkscape")
-    }!!
-
-    executable = "$buildDir/7z/7za.exe"
-    args(
-      "x", inkscapeArtifact.absolutePath, "-y",
-      "-o${buildDir.absolutePath}"
-    )
-  }
-
-  register("createInkscapeConfigDir", Copy::class) {
-    from(file("config"))
-    into("$buildDir/inkscape-config/")
-  }
-
-  register("copySourceSvg", Copy::class) {
-    from(file("test.svg"))
-    into("$buildDir/svg-sources/")
-  }
-
-  val addGcodeToolsConfiguration by registering(Exec::class) {
-    dependsOn(
-      "unzipInkscape",
-      "createInkscapeConfigDir",
-      "copySourceSvg")
-    val inputFile = "$buildDir/svg-sources/test.svg"
-    inputs.file(inputFile)
-
-    val outputFile = "$buildDir/svg-configured/test.svg"
+    val outputFile = file("$buildDir/svg-configured/test.svg")
     outputs.file(outputFile)
 
-    standardInput = java.io.ByteArrayInputStream("""
+    operations = """
+      window-close
+      file-open:$inputFile
+      window-open
       verb:ZoomPage
       verb:ToolNode
       verb:EditSelectAll
@@ -86,31 +27,27 @@ tasks {
       file-close
       quit-inkscape
       quit
-    """.trimIndent().toByteArray())
-    executable = "$buildDir/inkscape/bin/inkscape.exe"
-    args(inputFile, "--with-gui", "--shell")
-    environment(
-      "INKSCAPE_PROFILE_DIR" to file("$buildDir/inkscape-config").absolutePath)
+    """
   }
 
-  register("exportToGcode", Exec::class) {
+  register("exportToGcode", InkscapeExec::class) {
     inputs.files(addGcodeToolsConfiguration.get().outputs)
     doFirst {
       file("$buildDir/gcode").mkdirs()
     }
 
-    standardInput = java.io.ByteArrayInputStream("""
+    val inputFile = inputs.files.filter { it.isFile }.singleFile
+    operations = """
+      window-close
+      file-open:$inputFile
+      window-open
       verb:ZoomPage
       verb:EditSelectAll
       verb:ru.cnc-club.filter.gcodetools_ptg.noprefs
       file-close
       quit-inkscape
       quit
-    """.trimIndent().toByteArray())
-    executable = "$buildDir/inkscape/bin/inkscape.exe"
-    args(inputs.files.singleFile, "--with-gui", "--shell")
-    environment(
-      "INKSCAPE_PROFILE_DIR" to file("$buildDir/inkscape-config").absolutePath)
+    """
   }
 
   register("build") {
