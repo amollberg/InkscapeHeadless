@@ -1,3 +1,15 @@
+import eu.emundo.gradle.sevenz.UnSevenZ
+
+buildscript {
+  repositories {
+    maven {
+      url = uri("https://plugins.gradle.org/m2/")
+    }
+  }
+  dependencies {
+    classpath("gradle.plugin.eu.emundo:7z-gradle-plugin:1.0.5")
+  }
+}
 
 configurations {
   create("compile")
@@ -18,12 +30,12 @@ dependencies {
   "compile"("org.inkscape:inkscape:1.0.1:x64@7z")
 }
 
-tasks.register("unzipInkscape", Copy::class) {
+tasks.register("unzipInkscape", UnSevenZ::class) {
   dependsOn(configurations["compile"])
   val zipPath = configurations["compile"].find { it.isFile }!!
 
-  from(zipPath)
-  into(file("$buildDir/inkscape"))
+  sourceFile = zipPath
+  outputDir = file("$buildDir/inkscape")
 
   doLast {
     println(outputs.files.map { it.absolutePath })
