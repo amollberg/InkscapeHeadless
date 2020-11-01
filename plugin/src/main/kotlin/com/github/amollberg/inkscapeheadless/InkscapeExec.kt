@@ -6,7 +6,7 @@ import org.gradle.api.tasks.TaskAction
 
 open class InkscapeExec : DefaultTask() {
   @get:Input
-  lateinit var operations: String
+  open lateinit var operations: String
 
   @TaskAction
   fun execute() {

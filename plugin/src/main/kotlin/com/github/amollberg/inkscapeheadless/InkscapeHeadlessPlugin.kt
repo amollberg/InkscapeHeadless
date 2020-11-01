@@ -1,11 +1,12 @@
 package com.github.amollberg.inkscapeheadless
 
+import groovy.util.XmlParser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 
-class InkscapeHeadlessPlugin : Plugin<Project> {
+public class InkscapeHeadlessPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     // Repo for a single file in a public HTTPS repo, no metadata files required
     project.repositories.add(project.repositories.ivy {
