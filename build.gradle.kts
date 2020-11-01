@@ -1,5 +1,5 @@
-import org.example.amollberg.InkscapeHeadlessPlugin
-import org.example.amollberg.InkscapeExec
+import com.github.amollberg.inkscapeheadless.InkscapeHeadlessPlugin
+import com.github.amollberg.inkscapeheadless.InkscapeExec
 
 apply<InkscapeHeadlessPlugin>()
 

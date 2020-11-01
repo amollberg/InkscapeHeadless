@@ -1,4 +1,4 @@
-package org.example.amollberg
+package com.github.amollberg.inkscapeheadless
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
