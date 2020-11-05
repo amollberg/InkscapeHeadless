@@ -11,18 +11,23 @@ open class InkscapeExec : DefaultTask() {
   @get:Input
   open lateinit var operations: String
 
-  @get:InputFile
+  @get:[InputFile Optional]
   open var preferenceFile: File? = null
+
+  private val configDir: File get() = project.file(
+    "${project.buildDir}/inkscapeexec/inkscape-config"
+  )
 
   @TaskAction
   fun execute() {
     val stdin = operations.trimIndent()
 
-    preferenceFile?.let {
-      project.logger.info("Using preference file: $preferenceFile")
+    preferenceFile?.let {prefs ->
+      project.logger.info("Using preference file: $prefs")
       project.copy {
-        it.from(preferenceFile)
-        it.into("${project.buildDir}/inkscape-config/preferences.xml")
+        it.from(prefs)
+        it.into(configDir)
+        it.rename { "preferences.xml" }
       }
     }
 
@@ -36,8 +41,7 @@ open class InkscapeExec : DefaultTask() {
 
       it.args("--with-gui", "--shell")
       it.environment(mapOf(
-        "INKSCAPE_PROFILE_DIR" to project.file(
-          "${project.buildDir}/inkscapeexec/inkscape-config").absolutePath)
+        "INKSCAPE_PROFILE_DIR" to configDir.absolutePath)
       )
     }.assertNormalExitValue()
   }

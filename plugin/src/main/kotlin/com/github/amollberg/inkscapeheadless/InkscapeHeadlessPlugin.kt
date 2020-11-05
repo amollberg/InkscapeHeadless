@@ -62,10 +62,7 @@ public class InkscapeHeadlessPlugin : Plugin<Project> {
     }
 
     project.tasks.withType(InkscapeExec::class.java).configureEach {
-      it.dependsOn(
-        "unzipInkscape",
-        "createInkscapeConfigDir"
-      )
+      it.dependsOn("unzipInkscape")
     }
   }
 }
