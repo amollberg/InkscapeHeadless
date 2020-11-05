@@ -61,11 +61,6 @@ public class InkscapeHeadlessPlugin : Plugin<Project> {
       )
     }
 
-    project.tasks.register("createInkscapeConfigDir", Copy::class.java) {
-      it.from(project.file("config"))
-      it.into("$buildDir/inkscape-config/")
-    }
-
     project.tasks.withType(InkscapeExec::class.java).configureEach {
       it.dependsOn(
         "unzipInkscape",
