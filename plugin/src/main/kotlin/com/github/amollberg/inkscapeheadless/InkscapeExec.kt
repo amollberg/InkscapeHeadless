@@ -19,7 +19,7 @@ open class InkscapeExec : DefaultTask() {
   )
 
   @TaskAction
-  fun execute() {
+  open fun execute() {
     val stdin = operations.trimIndent()
 
     preferenceFile?.let {prefs ->

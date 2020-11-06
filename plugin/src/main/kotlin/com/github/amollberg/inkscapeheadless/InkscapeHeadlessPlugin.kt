@@ -1,12 +1,11 @@
 package com.github.amollberg.inkscapeheadless
 
-import groovy.util.XmlParser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 
-public class InkscapeHeadlessPlugin : Plugin<Project> {
+class InkscapeHeadlessPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     // Repo for a single file in a public HTTPS repo, no metadata files required
     project.repositories.add(project.repositories.ivy {
@@ -19,21 +18,24 @@ public class InkscapeHeadlessPlugin : Plugin<Project> {
       it.metadataSources { it.artifact() }
     })
     project.repositories.add(project.repositories.ivy {
-      it.url = project.uri("dependencies/")
+      it.url = project.uri("https://www.7-zip.org/")
       it.patternLayout {
-        it.artifact("/[module][revision]-extra.[ext]")
+        it.artifact("/a/[module][revision].[ext]")
       }
       it.metadataSources { it.artifact() }
     })
+
     val compileConf =
       project.configurations.create("inkscapeexec-compile") { c ->
         c.defaultDependencies { d ->
-          d.add(project.dependencies.create("org.7-zip:7z:1900@zip"))
+          // I.e. https://www.7-zip.org/a/7za920.zip
+          d.add(project.dependencies.create("org.7-zip:7za:920@zip"))
           d.add(project.dependencies.create("org.inkscape:inkscape:1.0.1:x64@7z"))
         }
       }
 
     val buildDir = project.file("${project.buildDir}/inkscapeexec")
+
     project.tasks.register("unzip7z", Copy::class.java) {
       it.dependsOn(compileConf)
       val sevenZipArchive = compileConf.find {

@@ -8,10 +8,6 @@ repositories {
   jcenter()
 }
 
-dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-}
-
 project.version = "0.1"
 
 gradlePlugin {
