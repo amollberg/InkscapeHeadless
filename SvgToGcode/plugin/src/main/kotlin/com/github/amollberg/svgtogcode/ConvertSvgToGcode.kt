@@ -1,6 +1,6 @@
 package com.github.amollberg.svgtogcode
 
-import com.github.amollberg.inkscapeheadless.InkscapeExec
+import com.github.amollberg.inkscapeexec.InkscapeExec
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile

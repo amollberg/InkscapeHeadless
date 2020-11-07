@@ -8,7 +8,7 @@ pluginManagement {
     jcenter()
   }
   plugins {
-    id("com.github.amollberg.inkscapeheadless") version "0.1"
+    id("com.github.amollberg.inkscapeexec") version "0.1"
   }
 }
 

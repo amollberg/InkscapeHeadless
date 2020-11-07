@@ -1,4 +1,4 @@
-package com.github.amollberg.inkscapeheadless
+package com.github.amollberg.inkscapeexec
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -14,7 +14,8 @@ open class InkscapeExec : DefaultTask() {
   @get:[InputFile Optional]
   open var preferenceFile: File? = null
 
-  private val configDir: File get() = project.file(
+  private val configDir: File
+    get() = project.file(
     "${project.buildDir}/inkscapeexec/inkscape-config"
   )
 

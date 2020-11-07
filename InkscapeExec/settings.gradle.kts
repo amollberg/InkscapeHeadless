@@ -1,3 +1,3 @@
-rootProject.name = "InkscapeHeadless"
+rootProject.name = "InkscapeExec"
 
 include("plugin")

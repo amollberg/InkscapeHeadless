@@ -11,18 +11,18 @@ repositories {
 project.version = "0.1"
 
 gradlePlugin {
-  val inkscapeHeadless by plugins.creating {
-    id = "com.github.amollberg.inkscapeheadless"
+  val inkscapeExec by plugins.creating {
+    id = "com.github.amollberg.inkscapeexec"
     implementationClass =
-      "com.github.amollberg.inkscapeheadless.InkscapeHeadlessPlugin"
+      "com.github.amollberg.inkscapeexec.InkscapeExecPlugin"
   }
 }
 
 publishing {
   publications {
-    create<MavenPublication>("InkscapeHeadless") {
+    create<MavenPublication>("InkscapeExec") {
       groupId = "com.github.amollberg"
-      artifactId = "inkscapeheadless"
+      artifactId = "inkscapeexec"
       version = project.version.toString()
 
       from(components["java"])
