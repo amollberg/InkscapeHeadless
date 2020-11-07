@@ -8,7 +8,7 @@ repositories {
   jcenter()
 }
 
-project.version = "0.1"
+project.version = "1.0"
 
 gradlePlugin {
   val inkscapeExec by plugins.creating {

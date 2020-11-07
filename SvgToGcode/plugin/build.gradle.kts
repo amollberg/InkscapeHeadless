@@ -17,10 +17,10 @@ repositories {
 dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation(gradleApi())
-  implementation("com.github.amollberg:inkscapeexec:0.1")
+  implementation("com.github.amollberg:inkscapeexec:1.0")
 }
 
-project.version = "0.1"
+project.version = "1.0"
 
 gradlePlugin {
   val svgToGcode by plugins.creating {

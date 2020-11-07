@@ -1,7 +1,7 @@
 import com.github.amollberg.svgtogcode.ConvertSvgToGcode
 
 plugins {
-  id("com.github.amollberg.svgtogcode") version "0.1"
+  id("com.github.amollberg.svgtogcode") version "1.0"
 }
 
 tasks {
